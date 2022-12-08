@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "hr-job-offer-form-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrJobOfferForm/HrJobOfferFormWebPart.js",
+          "manifest": "./src/webparts/hrJobOfferForm/HrJobOfferFormWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "HrJobOfferFormWebPartStrings": "lib/webparts/hrJobOfferForm/loc/{locale}.js"
+  }
+}
