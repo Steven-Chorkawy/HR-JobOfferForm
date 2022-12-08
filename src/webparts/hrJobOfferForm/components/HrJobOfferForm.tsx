@@ -57,6 +57,8 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
       // This FilePicker should only show results from the JobOfferTemplates library.
       <FilePicker
         buttonIcon="FileImage"
+        label={label}
+        buttonLabel={"Select Template File"}
         onSave={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult); }}
         onChange={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult) }}
         context={this.props.context}
