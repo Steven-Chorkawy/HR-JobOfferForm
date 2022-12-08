@@ -8,6 +8,7 @@ import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubm
 import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
 import { MyTermSets } from '../../../enums/MyTermSets';
+import { FormatTitle } from '../../../HelperMethods/MyHelperMethods';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, {}> {
@@ -15,7 +16,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
   //#region Form Fields
   private ManagedMetadataInput = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, id, valid, termsetNameOrID, panelTitle, required, ...others } = fieldRenderProps;
+    const { validationMessage, visited, label, id, valid, termsetNameOrID, panelTitle, required, onChange, ...others } = fieldRenderProps;
     const showValidationMessage = visited && validationMessage;
 
     return (<FieldWrapper>
@@ -26,6 +27,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         panelTitle={panelTitle}
         context={this.props.context}
         required={required}
+        onChange={onChange}
       />
     </FieldWrapper>);
   }
@@ -33,6 +35,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   private JobTypeDropDown = (fieldRenderProps: any) => {
     const { validationMessage, visited, label, id, valid, ...others } = fieldRenderProps;
     const showValidationMessage = visited && validationMessage;
+    // TODO: Replace this with a list pulled from metadata.
     const options: IDropdownOption[] = [
       { key: 'Extension Letter', text: 'Extension Letter' },
       { key: 'Fire', text: 'Fire' },
@@ -115,6 +118,9 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 panelTitle={"Select Position"}
                 component={this.ManagedMetadataInput}
                 requied={true}
+                onChange={value => {
+                  formRenderProps.onChange('Position', { value: value.length > 0 ? value[0] : null });
+                }}
               />
               <Field
                 id={"CandidateName"}
@@ -131,6 +137,9 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 panelTitle={"Select Department"}
                 component={this.ManagedMetadataInput}
                 required={false}
+                onChange={value => {
+                  formRenderProps.onChange('Department', { value: value.length > 0 ? value[0] : null });
+                }}
               />
               <Field
                 id={"JobType"}
@@ -145,6 +154,14 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 component={this.TemplateFilePicker}
               />
 
+              <div>
+                Test Title: {
+                  FormatTitle(
+                    formRenderProps.valueGetter('JobID'),
+                    formRenderProps.valueGetter('Position') && formRenderProps.valueGetter('Position').name,
+                    formRenderProps.valueGetter('CandidateName'))
+                }
+              </div>
               <div className="k-form-buttons" style={{ marginTop: "20px" }}>
                 <Stack horizontal tokens={{ childrenGap: 40 }}>
                   <PrimaryButton text="Submit" type="submit" />

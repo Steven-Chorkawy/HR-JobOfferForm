@@ -1,5 +1,3 @@
-import { WebPartContext } from "@microsoft/sp-webpart-base";
-
 export interface IHrJobOfferFormProps {
   description: string;
   isDarkTheme: boolean;
