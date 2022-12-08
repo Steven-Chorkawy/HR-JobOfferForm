@@ -20,8 +20,10 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
     return (<FieldWrapper>
       <TaxonomyPicker
         allowMultipleSelections={false}
-        termsetNameOrID={"Job Title"}
+        termsetNameOrID={"Department"}
         label={label}
+        panelTitle={"Select Department"}
+        context={this.props.context}
       />
     </FieldWrapper>);
   }
