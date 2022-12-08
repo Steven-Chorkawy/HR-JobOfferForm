@@ -9,12 +9,18 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "@fluentui/react": "^8.103.6",
     "@microsoft/sp-core-library": "1.15.2",
     "@microsoft/sp-lodash-subset": "1.15.2",
     "@microsoft/sp-office-ui-fabric-core": "1.15.2",
     "@microsoft/sp-property-pane": "1.15.2",
     "@microsoft/sp-webpart-base": "1.15.2",
+    "@pnp/graph": "^3.9.0",
+    "@pnp/sp": "^3.9.0",
+    "@pnp/spfx-controls-react": "^3.12.0",
     "@progress/kendo-licensing": "^1.2.2",
+    "@progress/kendo-react-form": "^5.9.0",
+    "@progress/kendo-react-labels": "^5.9.0",
     "office-ui-fabric-react": "7.185.7",
     "react": "16.13.1",
     "react-dom": "16.13.1",

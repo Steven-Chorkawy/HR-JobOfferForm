@@ -12,6 +12,8 @@ import * as strings from 'HrJobOfferFormWebPartStrings';
 import HrJobOfferForm from './components/HrJobOfferForm';
 import { IHrJobOfferFormProps } from './components/IHrJobOfferFormProps';
 
+import { spfi, SPFx } from "@pnp/sp";
+
 export interface IHrJobOfferFormWebPartProps {
   description: string;
 }
@@ -38,6 +40,8 @@ export default class HrJobOfferFormWebPart extends BaseClientSideWebPart<IHrJobO
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
+
+    const sp = spfi().using(SPFx(this.context));
 
     return super.onInit();
   }
