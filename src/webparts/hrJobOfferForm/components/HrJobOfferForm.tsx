@@ -5,33 +5,80 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import { FontSizes } from '@fluentui/theme/lib/fonts';
 import { Field, FieldWrapper, Form, FormElement } from '@progress/kendo-react-form';
 import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubmit';
-import { TextField } from '@fluentui/react';
-import { TaxonomyPicker } from '@pnp/spfx-controls-react';
+import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
+import { MyTermSets } from '../../../enums/MyTermSets';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, {}> {
 
 
   //#region Form Fields
-  private DepartmentInput = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, id, valid, ...others } = fieldRenderProps;
+  private ManagedMetadataInput = (fieldRenderProps: any) => {
+    const { validationMessage, visited, label, id, valid, termsetNameOrID, panelTitle, required, ...others } = fieldRenderProps;
     const showValidationMessage = visited && validationMessage;
 
     return (<FieldWrapper>
       <TaxonomyPicker
         allowMultipleSelections={false}
-        termsetNameOrID={"Department"}
+        termsetNameOrID={termsetNameOrID}
         label={label}
-        panelTitle={"Select Department"}
+        panelTitle={panelTitle}
         context={this.props.context}
+        required={required}
       />
     </FieldWrapper>);
   }
+
+  private JobTypeDropDown = (fieldRenderProps: any) => {
+    const { validationMessage, visited, label, id, valid, ...others } = fieldRenderProps;
+    const showValidationMessage = visited && validationMessage;
+    const options: IDropdownOption[] = [
+      { key: 'Extension Letter', text: 'Extension Letter' },
+      { key: 'Fire', text: 'Fire' },
+      { key: 'Full Time Non-Affiliated', text: 'Full Time Non-Affiliated' },
+      { key: 'grape', text: 'Grape' },
+      { key: 'broccoli', text: 'Broccoli' },
+      { key: 'carrot', text: 'Carrot' },
+      { key: 'lettuce', text: 'Lettuce' },
+    ];
+
+    return (<Dropdown
+      placeholder="Select a Job Type"
+      label={label}
+      options={options}
+    />);
+  }
+
+  private TemplateFilePicker = (fieldRenderProps: any) => {
+    const { validationMessage, visited, label, id, valid, ...others } = fieldRenderProps;
+
+    return (
+      // This FilePicker should only show results from the JobOfferTemplates library.
+      <FilePicker
+        buttonIcon="FileImage"
+        onSave={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult); }}
+        onChange={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult) }}
+        context={this.props.context}
+        defaultFolderAbsolutePath={"https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates"}
+        hideRecentTab={true}
+        hideWebSearchTab={true}
+        hideStockImages={true}
+        hideOrganisationalAssetTab={true}
+        hideOneDriveTab={true}
+        hideLocalUploadTab={true}
+        hideLocalMultipleUploadTab={true}
+        hideLinkUploadTab={true}
+      />
+    );
+  }
+
   //#endregion
 
   private _onSubmit = async (e: INewJobOfferFormSubmit): Promise<void> => {
     console.log('On Form Submit');
     console.log(e);
+    alert('Form submit... Check console...');
   }
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {
@@ -59,15 +106,59 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 component={TextField}
               />
               <Field
+                id={"Position"}
+                name={"Position"}
+                label={"* Position"}
+                termsetNameOrID={MyTermSets.JobTitles}
+                panelTitle={"Select Position"}
+                component={this.ManagedMetadataInput}
+                requied={true}
+              />
+              <Field
+                id={"CandidateName"}
+                name={"CandidateName"}
+                label={"* Candidate Name"}
+                required={true}
+                component={TextField}
+              />
+              <Field
                 id={"Department"}
                 name={"Department"}
                 label={"Department"}
-                component={this.DepartmentInput}
+                termsetNameOrID={MyTermSets.Departments}
+                panelTitle={"Select Department"}
+                component={this.ManagedMetadataInput}
+                required={false}
               />
+              <Field
+                id={"JobType"}
+                name={"JobType"}
+                label={"Job Type"}
+                component={this.JobTypeDropDown}
+              />
+              <Field
+                id={"TemplateFile"}
+                name={"TemplateFile"}
+                label={"Select Template File"}
+                component={this.TemplateFilePicker}
+              />
+
+              <div className="k-form-buttons" style={{ marginTop: "20px" }}>
+                <Stack horizontal tokens={{ childrenGap: 40 }}>
+                  <PrimaryButton text="Submit" type="submit" />
+                  <DefaultButton
+                    text="Clear"
+                    onClick={e => {
+                      e.preventDefault();
+                      formRenderProps.onFormReset();
+                    }}
+                  />
+                </Stack>
+              </div>
             </FormElement>
           )}
         />
-      </div>
+      </div >
     );
   }
 }
