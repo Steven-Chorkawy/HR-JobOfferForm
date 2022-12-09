@@ -11,10 +11,13 @@ import { MyTermSets } from '../../../enums/MyTermSets';
 import { FormatTitle, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
 
 
-export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, {}> {
+export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, any> {
 
   constructor(props: any) {
     super(props);
+    this.state = {
+      templateFiles: []
+    };
   }
 
   //#region Form Fields
@@ -148,11 +151,19 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 label={"Select Template Files"}
                 component={this.TemplateFilePicker}
                 onSave={(value: any) => {
-                  console.log('TemplateFile Change');
-                  console.log(value);
                   formRenderProps.onChange('TemplateFiles', { value: value });
+                  this.setState({ templateFiles: value });
                 }}
               />
+
+              <div>
+                Files selected: {this.state.templateFiles.length}
+                <ul>
+                  {this.state.templateFiles.map((item: any) => (
+                    <li><a href={item.fileAbsoluteUrl} target="_blank">{item.fileName}</a></li>
+                  ))}
+                </ul>
+              </div>
 
               <div>
                 Test Title: {
