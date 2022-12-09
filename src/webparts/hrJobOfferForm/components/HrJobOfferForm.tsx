@@ -8,11 +8,15 @@ import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubm
 import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
 import { MyTermSets } from '../../../enums/MyTermSets';
-import { FormatTitle } from '../../../HelperMethods/MyHelperMethods';
+import { FormatTitle, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, {}> {
 
+  constructor(props: any) {
+    super(props);
+    GetTemplateDocuments();
+  }
 
   //#region Form Fields
   private ManagedMetadataInput = (fieldRenderProps: any) => {
@@ -54,7 +58,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   }
 
   private TemplateFilePicker = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, id, valid, ...others } = fieldRenderProps;
+    const { validationMessage, visited, label, valid, ...others } = fieldRenderProps;
 
     return (
       // This FilePicker should only show results from the JobOfferTemplates library.
@@ -87,14 +91,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   }
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
-
     return (
       <div>
         <div style={{ fontSize: FontSizes.size32 }}>{this.props.description}</div>

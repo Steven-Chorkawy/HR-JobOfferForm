@@ -13,4 +13,7 @@ build.rig.getTasks = function () {
   return result;
 };
 
+// Because YouTube said to do it. https://www.youtube.com/watch?v=wZsq_VWKhWM
+build.tslintCmd.enabled = false
+
 build.initialize(require('gulp'));
