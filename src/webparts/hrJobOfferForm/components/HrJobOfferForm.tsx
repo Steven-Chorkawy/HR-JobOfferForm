@@ -15,7 +15,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
   constructor(props: any) {
     super(props);
-    GetTemplateDocuments();
   }
 
   //#region Form Fields
@@ -37,7 +36,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   }
 
   private JobTypeDropDown = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, id, valid, ...others } = fieldRenderProps;
+    const { validationMessage, visited, label, id, valid, onChange, ...others } = fieldRenderProps;
     const showValidationMessage = visited && validationMessage;
     // TODO: Replace this with a list pulled from metadata.
     const options: IDropdownOption[] = [
@@ -54,11 +53,12 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
       placeholder="Select a Job Type"
       label={label}
       options={options}
+      onChange={(event, item) => onChange(item)}
     />);
   }
 
   private TemplateFilePicker = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, valid, ...others } = fieldRenderProps;
+    const { validationMessage, visited, label, valid, onSave, ...others } = fieldRenderProps;
 
     return (
       // This FilePicker should only show results from the JobOfferTemplates library.
@@ -66,8 +66,11 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         buttonIcon="FileImage"
         label={label}
         buttonLabel={"Select Template File"}
-        onSave={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult); }}
-        onChange={(filePickerResult: IFilePickerResult[]) => { console.log(filePickerResult) }}
+        onSave={(filePickerResult: IFilePickerResult[]) => onSave(filePickerResult)}
+        onChange={(filePickerResult: IFilePickerResult[]) => {
+          console.log('onChange')
+          console.log(filePickerResult);
+        }}
         context={this.props.context}
         defaultFolderAbsolutePath={"https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates"}
         hideRecentTab={true}
@@ -87,7 +90,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   private _onSubmit = async (e: INewJobOfferFormSubmit): Promise<void> => {
     console.log('On Form Submit');
     console.log(e);
-    alert('Form submit... Check console...');
   }
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {
@@ -113,10 +115,8 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 termsetNameOrID={MyTermSets.JobTitles}
                 panelTitle={"Select Position"}
                 component={this.ManagedMetadataInput}
-                requied={true}
-                onChange={value => {
-                  formRenderProps.onChange('Position', { value: value.length > 0 ? value[0] : null });
-                }}
+                required={true}
+                onChange={value => formRenderProps.onChange('Position', { value: value.length > 0 ? value[0] : null })}
               />
               <Field
                 id={"CandidateName"}
@@ -133,21 +133,25 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 panelTitle={"Select Department"}
                 component={this.ManagedMetadataInput}
                 required={false}
-                onChange={value => {
-                  formRenderProps.onChange('Department', { value: value.length > 0 ? value[0] : null });
-                }}
+                onChange={value => formRenderProps.onChange('Department', { value: value.length > 0 ? value[0] : null })}
               />
               <Field
                 id={"JobType"}
                 name={"JobType"}
                 label={"Job Type"}
                 component={this.JobTypeDropDown}
+                onChange={value => formRenderProps.onChange('JobType', { value: value.text })}
               />
               <Field
-                id={"TemplateFile"}
-                name={"TemplateFile"}
-                label={"Select Template File"}
+                id={"TemplateFiles"}
+                name={"TemplateFiles"}
+                label={"Select Template Files"}
                 component={this.TemplateFilePicker}
+                onSave={(value: any) => {
+                  console.log('TemplateFile Change');
+                  console.log(value);
+                  formRenderProps.onChange('TemplateFiles', { value: value });
+                }}
               />
 
               <div>
