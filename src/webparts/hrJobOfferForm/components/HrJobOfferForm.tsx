@@ -8,7 +8,9 @@ import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubm
 import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
 import { MyTermSets } from '../../../enums/MyTermSets';
-import { FormatTitle, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
+import { CreateDocumentSet, FormatTitle, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
+import { getSP } from '../pnpjsConfig';
+import { SPFI } from '@pnp/sp';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, any> {
@@ -18,7 +20,11 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
     this.state = {
       templateFiles: []
     };
+
+    this.SP = getSP(this.props.context);
   }
+
+  private SP: SPFI = null;
 
   //#region Form Fields
   private ManagedMetadataInput = (fieldRenderProps: any) => {
@@ -93,6 +99,9 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   private _onSubmit = async (e: INewJobOfferFormSubmit): Promise<void> => {
     console.log('On Form Submit');
     console.log(e);
+
+    e.Title = FormatTitle(e.JobID, e.Position.name, e.CandidateName);
+    let output = await CreateDocumentSet(e);
   }
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {

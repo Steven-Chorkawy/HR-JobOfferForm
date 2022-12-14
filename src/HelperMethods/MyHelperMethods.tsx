@@ -8,6 +8,7 @@ import "@pnp/sp/folders";
 import "@pnp/sp/security";
 import { MyLibraries } from "../enums/MyLibraries";
 import { getSP } from "../webparts/hrJobOfferForm/pnpjsConfig";
+import { INewJobOfferFormSubmit } from "../interfaces/INewJobOfferFormSubmit";
 
 
 
@@ -33,10 +34,25 @@ export const GetTemplateDocuments = async () => {
     console.log(lists);
 
     let templateDocuments = await spfi(sp).web.lists.getByTitle(MyLibraries.JobOfferTemplatesLibrary).items.select("Id", "Title", "FileLeafRef", "File/Length").expand("File/Length")();
-  
+
 
     console.log('Template Documents');
     console.log(templateDocuments);
 
     return templateDocuments;
+}
+
+export const CreateDocumentSet = async (input: INewJobOfferFormSubmit) => {
+    let sp = getSP();   
+
+    let library = await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).select('Title', 'RootFolder/ServerRelativeUrl').expand('RootFolder')();
+    let folderPath = `${library.RootFolder.ServerRelativeUrl}/${input.Title}`
+
+    let newFolderResult = await sp.web.folders.addUsingPath(folderPath);
+  
+    let newFolderProperties = await sp.web.getFolderByServerRelativePath(newFolderResult.data.ServerRelativeUrl).listItemAllFields();
+
+    await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).items.getById(newFolderProperties.ID).update({
+        ContentTypeId: MyLibraries.JobOfferDocumentSetContentTypeID
+    });
 }
