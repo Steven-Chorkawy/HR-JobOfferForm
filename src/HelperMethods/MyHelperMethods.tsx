@@ -3,13 +3,13 @@ import "@pnp/sp/webs";
 import "@pnp/sp/sites";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
+import "@pnp/sp/fields";
 import "@pnp/sp/files";
 import "@pnp/sp/folders";
 import "@pnp/sp/security";
 import { MyLibraries } from "../enums/MyLibraries";
 import { getSP } from "../webparts/hrJobOfferForm/pnpjsConfig";
 import { INewJobOfferFormSubmit } from "../interfaces/INewJobOfferFormSubmit";
-
 
 
 // Title = JobID-Position-CandidateName
@@ -55,4 +55,13 @@ export const CreateDocumentSet = async (input: INewJobOfferFormSubmit) => {
     await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).items.getById(newFolderProperties.ID).update({
         ContentTypeId: MyLibraries.JobOfferDocumentSetContentTypeID
     });
+}
+
+/**
+ * Get a list of Job Type
+ */
+export const GetJobTypes = async () => {
+    let sp = getSP();
+    let output = await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).fields.getByInternalNameOrTitle('JobType').select('Choices')();
+    return output["Choices"];
 }

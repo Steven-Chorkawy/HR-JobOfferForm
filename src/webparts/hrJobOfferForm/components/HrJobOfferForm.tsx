@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './HrJobOfferForm.module.scss';
 import { IHrJobOfferFormProps } from './IHrJobOfferFormProps';
+import { IHrJobOfferFormState } from './IHrJobOfferFormState';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { FontSizes } from '@fluentui/theme/lib/fonts';
 import { Field, FieldWrapper, Form, FormElement } from '@progress/kendo-react-form';
@@ -8,12 +9,13 @@ import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubm
 import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
 import { MyTermSets } from '../../../enums/MyTermSets';
-import { CreateDocumentSet, FormatTitle, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
+import { CreateDocumentSet, FormatTitle, GetJobTypes, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
 import { getSP } from '../pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 
 
-export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, any> {
+
+export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, IHrJobOfferFormState> {
 
   constructor(props: any) {
     super(props);
@@ -47,23 +49,12 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
   private JobTypeDropDown = (fieldRenderProps: any) => {
     const { validationMessage, visited, label, id, valid, onChange, ...others } = fieldRenderProps;
-    const showValidationMessage = visited && validationMessage;
-    // TODO: Replace this with a list pulled from metadata.
-    const options: IDropdownOption[] = [
-      { key: 'Extension Letter', text: 'Extension Letter' },
-      { key: 'Fire', text: 'Fire' },
-      { key: 'Full Time Non-Affiliated', text: 'Full Time Non-Affiliated' },
-      { key: 'grape', text: 'Grape' },
-      { key: 'broccoli', text: 'Broccoli' },
-      { key: 'carrot', text: 'Carrot' },
-      { key: 'lettuce', text: 'Lettuce' },
-    ];
 
     return (<FieldWrapper>
       <Dropdown
         placeholder="Select a Job Type"
         label={label}
-        options={options}
+        options={this.state.jobTypes}
         onChange={(event, item) => onChange(item)}
       />
     </FieldWrapper>);
@@ -234,5 +225,14 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         />
       </div >
     );
+  }
+
+  public componentDidMount(): void {
+    GetJobTypes().then(values => {
+      this.setState({
+        // mapped to be formatted for dropdowns.
+        jobTypes: values.map(v => { return { key: v, text: v } })
+      });
+    });
   }
 }
