@@ -39,25 +39,28 @@ export const CreateDocumentSet = async (input: INewJobOfferFormSubmit): Promise<
     const newFolderResult = await sp.web.folders.addUsingPath(folderPath);
     const newFolderProperties = await sp.web.getFolderByServerRelativePath(newFolderResult.data.ServerRelativeUrl).listItemAllFields();
 
-
-    console.log(input);
-    console.log('New Doc Set has been created');
-    console.log(newFolderProperties);
-
     // Assign document set metadata. 
     // TODO: Add other properties here.
     await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).items.getById(newFolderProperties.ID).update({
         ContentTypeId: MyLibraries.JobOfferDocumentSetContentTypeID
     });
+
+    // Copy template files. 
+    for (let templateFileIndex = 0; templateFileIndex < input.TemplateFiles.length; templateFileIndex++) {
+        const templateFile = input.TemplateFiles[templateFileIndex];
+        await CopyTemplateDocument(input.Title, templateFile.fileAbsoluteUrl, templateFile.fileName);
+    }
 }
 
 /**
  * Copy the provided template documents into a given document set.
  * @param destinationUrl Path to the document set which the templates will be copied into. 
- * @param templatePaths An array of strings containing the path to the template files that will be copied.
+ * @param templatePaths A strings that containing the path to the template files that will be copied.
  */
-export const CopyTemplateDocuments = async (destinationUrl: string, templatePaths: string[]) => {
-
+export const CopyTemplateDocument = async (documentSetTitle: string, templatePath: string, templateFileName: string) => {
+    const sp = getSP();
+    const destinationUrl = `/sites/HR/JobOffers/${documentSetTitle}/${templateFileName}`;
+    await sp.web.getFileByUrl(templatePath).copyTo(destinationUrl, false);
 }
 
 /**
