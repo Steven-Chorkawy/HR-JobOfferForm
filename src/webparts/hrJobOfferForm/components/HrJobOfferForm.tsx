@@ -40,6 +40,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         context={this.props.context}
         required={required}
         onChange={onChange}
+        errorMessage={showValidationMessage}
       />
     </FieldWrapper>);
   }
@@ -58,12 +59,28 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
       { key: 'lettuce', text: 'Lettuce' },
     ];
 
-    return (<Dropdown
-      placeholder="Select a Job Type"
-      label={label}
-      options={options}
-      onChange={(event, item) => onChange(item)}
-    />);
+    return (<FieldWrapper>
+      <Dropdown
+        placeholder="Select a Job Type"
+        label={label}
+        options={options}
+        onChange={(event, item) => onChange(item)}
+      />
+    </FieldWrapper>);
+  }
+
+  private TextFieldInput = (fieldRenderProps: any) => {
+    const { validationMessage, visited, label, id, name, ...others } = fieldRenderProps;
+    const showValidationMessage = visited && validationMessage;
+    return <FieldWrapper>
+      <TextField
+        id={id}
+        name={name}
+        label={label}
+        errorMessage={showValidationMessage && validationMessage}
+        {...others}
+      />
+    </FieldWrapper>;
   }
 
   private TemplateFilePicker = (fieldRenderProps: any) => {
@@ -71,29 +88,46 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
     return (
       // This FilePicker should only show results from the JobOfferTemplates library.
-      <FilePicker
-        buttonIcon="FileImage"
-        label={label}
-        buttonLabel={"Select Template File"}
-        onSave={(filePickerResult: IFilePickerResult[]) => onSave(filePickerResult)}
-        onChange={(filePickerResult: IFilePickerResult[]) => {
-          console.log('onChange')
-          console.log(filePickerResult);
-        }}
-        context={this.props.context}
-        defaultFolderAbsolutePath={"https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates"}
-        hideRecentTab={true}
-        hideWebSearchTab={true}
-        hideStockImages={true}
-        hideOrganisationalAssetTab={true}
-        hideOneDriveTab={true}
-        hideLocalUploadTab={true}
-        hideLocalMultipleUploadTab={true}
-        hideLinkUploadTab={true}
-      />
+      <FieldWrapper>
+        <FilePicker
+          buttonIcon="FileImage"
+          label={label}
+          buttonLabel={"Select Template File"}
+          onSave={(filePickerResult: IFilePickerResult[]) => onSave(filePickerResult)}
+          onChange={(filePickerResult: IFilePickerResult[]) => {
+            console.log('onChange')
+            console.log(filePickerResult);
+          }}
+          context={this.props.context}
+          defaultFolderAbsolutePath={"https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates"}
+          hideRecentTab={true}
+          hideWebSearchTab={true}
+          hideStockImages={true}
+          hideOrganisationalAssetTab={true}
+          hideOneDriveTab={true}
+          hideLocalUploadTab={true}
+          hideLocalMultipleUploadTab={true}
+          hideLinkUploadTab={true}
+        />
+      </FieldWrapper>
     );
   }
+  //#endregion
 
+  //#region Validators
+  // If value is good return empty string.  If value is bad return an error message.
+  private positionValidator = (value: any): string => value ? "" : "Please select a Position."
+  private jobIDValidator = (value: any): string => {
+    console.log(value);
+    if (!value)
+      return "Please enter a Job ID.  Job IDs cannot contain the following characters.  \" * : < > ? / \\ |";
+    return ['"', '*', ':', '<', '>', '?', '/', '\\', '|'].some(v => { return value.includes(v); }) ? "Job ID cannot contain the following characters.  \" * : < > ? / \\ |" : "";
+  }
+  private candidateNameValidator = (value: any): string => {
+    if (!value)
+      return "Please enter a Candidate Name.  Candidate Names cannot contain the following characters.  \" * : < > ? / \\ |";
+    return ['"', '*', ':', '<', '>', '?', '/', '\\', '|'].some(v => { return value.includes(v); }) ? "Candidate Name cannot contain the following characters.  \" * : < > ? / \\ |" : "";
+  }
   //#endregion
 
   private _onSubmit = async (e: INewJobOfferFormSubmit): Promise<void> => {
@@ -117,8 +151,8 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 id={"JobID"}
                 name={"JobID"}
                 label={"* Job ID"}
-                required={true}
-                component={TextField}
+                component={this.TextFieldInput}
+                validator={this.jobIDValidator}
               />
               <Field
                 id={"Position"}
@@ -128,14 +162,15 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 panelTitle={"Select Position"}
                 component={this.ManagedMetadataInput}
                 required={true}
+                validator={this.positionValidator}
                 onChange={value => formRenderProps.onChange('Position', { value: value.length > 0 ? value[0] : null })}
               />
               <Field
                 id={"CandidateName"}
                 name={"CandidateName"}
                 label={"* Candidate Name"}
-                required={true}
-                component={TextField}
+                component={this.TextFieldInput}
+                validator={this.candidateNameValidator}
               />
               <Field
                 id={"Department"}
