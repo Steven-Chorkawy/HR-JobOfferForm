@@ -42,13 +42,19 @@ export const CreateDocumentSet = async (input: INewJobOfferFormSubmit): Promise<
     // Assign document set metadata. 
     // TODO: Add other properties here.
     await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).items.getById(newFolderProperties.ID).update({
-        ContentTypeId: MyLibraries.JobOfferDocumentSetContentTypeID
+        ContentTypeId: MyLibraries.JobOfferDocumentSetContentTypeID,
+        JobID: input.JobID,
+        CandidateName: input.CandidateName,
+        JobType: input.JobType,
+
     });
 
     // Copy template files. 
-    for (let templateFileIndex = 0; templateFileIndex < input.TemplateFiles.length; templateFileIndex++) {
-        const templateFile = input.TemplateFiles[templateFileIndex];
-        await CopyTemplateDocument(input.Title, templateFile.fileAbsoluteUrl, templateFile.fileName);
+    if (input.TemplateFiles) {
+        for (let templateFileIndex = 0; templateFileIndex < input.TemplateFiles.length; templateFileIndex++) {
+            const templateFile = input.TemplateFiles[templateFileIndex];
+            await CopyTemplateDocument(input.Title, templateFile.fileAbsoluteUrl, templateFile.fileName);
+        }
     }
 }
 
