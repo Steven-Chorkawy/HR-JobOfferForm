@@ -30,7 +30,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
   //#region Form Fields
   private ManagedMetadataInput = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, id, valid, termsetNameOrID, panelTitle, required, onChange, ...others } = fieldRenderProps;
+    const { validationMessage, visited, label, termsetNameOrID, panelTitle, required, onChange, ...others } = fieldRenderProps;
     const showValidationMessage = visited && validationMessage;
 
     return (<FieldWrapper>
@@ -43,12 +43,13 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         required={required}
         onChange={onChange}
         errorMessage={showValidationMessage}
+        {...others}
       />
     </FieldWrapper>);
   }
 
   private JobTypeDropDown = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, id, valid, onChange, ...others } = fieldRenderProps;
+    const { label, onChange, ...others } = fieldRenderProps;
 
     return (<FieldWrapper>
       <Dropdown
@@ -56,6 +57,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         label={label}
         options={this.state.jobTypes}
         onChange={(event, item) => onChange(item)}
+        {...others}
       />
     </FieldWrapper>);
   }
@@ -75,7 +77,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   }
 
   private TemplateFilePicker = (fieldRenderProps: any) => {
-    const { validationMessage, visited, label, valid, onSave, ...others } = fieldRenderProps;
+    const { label, onSave, ...others } = fieldRenderProps;
 
     return (
       // This FilePicker should only show results from the JobOfferTemplates library.
@@ -99,6 +101,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
           hideLocalUploadTab={true}
           hideLocalMultipleUploadTab={true}
           hideLinkUploadTab={true}
+          {...others}
         />
       </FieldWrapper>
     );
@@ -109,7 +112,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   // If value is good return empty string.  If value is bad return an error message.
   private positionValidator = (value: any): string => value ? "" : "Please select a Position."
   private jobIDValidator = (value: any): string => {
-    console.log(value);
     if (!value)
       return "Please enter a Job ID.  Job IDs cannot contain the following characters.  \" * : < > ? / \\ |";
     return ['"', '*', ':', '<', '>', '?', '/', '\\', '|'].some(v => { return value.includes(v); }) ? "Job ID cannot contain the following characters.  \" * : < > ? / \\ |" : "";
@@ -126,7 +128,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
     console.log(e);
 
     e.Title = FormatTitle(e.JobID, e.Position.name, e.CandidateName);
-    let output = await CreateDocumentSet(e);
+    await CreateDocumentSet(e);
   }
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {
@@ -194,8 +196,8 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
               <div>
                 Files selected: {this.state.templateFiles.length}
                 <ul>
-                  {this.state.templateFiles.map((item: any) => (
-                    <li><a href={item.fileAbsoluteUrl} target="_blank">{item.fileName}</a></li>
+                  {this.state.templateFiles.map(item => (
+                    <li key={item.fileName}><a href={item.fileAbsoluteUrl} target="_blank" rel="noreferrer">{item.fileName}</a></li>
                   ))}
                 </ul>
               </div>
@@ -233,6 +235,9 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
         // mapped to be formatted for dropdowns.
         jobTypes: values.map(v => { return { key: v, text: v } })
       });
+    }).catch(reason => {
+      console.error(reason);
+      alert('Failed to load Job Types.');
     });
   }
 }
