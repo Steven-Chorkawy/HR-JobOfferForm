@@ -6,13 +6,13 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import { FontSizes } from '@fluentui/theme/lib/fonts';
 import { Field, FieldWrapper, Form, FormElement } from '@progress/kendo-react-form';
 import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubmit';
-import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, MessageBar, MessageBarType, PrimaryButton, ProgressIndicator, Stack, TextField } from '@fluentui/react';
 import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
 import { MyTermSets } from '../../../enums/MyTermSets';
-import { CreateDocumentSet, FormatTitle, GetJobTypes, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
+import { CreateDocumentSet, FormatDocumentSetPath, FormatTitle, GetJobTypes, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
 import { getSP } from '../pnpjsConfig';
 import { SPFI } from '@pnp/sp';
-
+import { MyFormStatus } from '../../../enums/MyFormStatus';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, IHrJobOfferFormState> {
@@ -20,7 +20,8 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   constructor(props: any) {
     super(props);
     this.state = {
-      templateFiles: []
+      templateFiles: [],
+      formStatus: MyFormStatus.New
     };
 
     this.SP = getSP(this.props.context);
@@ -124,11 +125,45 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   //#endregion
 
   private _onSubmit = async (e: INewJobOfferFormSubmit): Promise<void> => {
-    console.log('On Form Submit');
-    console.log(e);
+    try {
+      console.log('On Form Submit');
+      console.log(e);
 
-    e.Title = FormatTitle(e.JobID, e.Position.name, e.CandidateName);
-    await CreateDocumentSet(e);
+      e.Title = FormatTitle(e.JobID, e.Position.name, e.CandidateName);
+
+      // Save the title in state to be used in success/failed error messages. 
+      this.setState({
+        jobOfferTitle: e.Title,
+        jobOfferPath: FormatDocumentSetPath(e.Title),
+        formStatus: MyFormStatus.Loading
+      });
+
+      await CreateDocumentSet(e)
+        .then(value => {
+          console.log('Form success!');
+          console.log(value);
+          this.setState({
+            formStatus: MyFormStatus.Success,
+            formStatusMessage: "Job Offer has successfully been created!"
+          });
+        })
+        .catch(reason => {
+          console.log('Form failed to submit.');
+          console.log(reason);
+          this.setState({
+            formStatus: MyFormStatus.Failed,
+            formStatusMessage: "Something went wrong.  Failed to submit form."
+          });
+        });
+    }
+    catch (error) {
+      console.log("Form failed to submit");
+      console.log(error);
+      this.setState({
+        formStatus: MyFormStatus.Failed,
+        formStatusMessage: "Something went wrong.  Failed to submit form."
+      });
+    }
   }
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {
@@ -210,6 +245,25 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                     formRenderProps.valueGetter('CandidateName'))
                 }
               </div>
+
+              <div>
+                {
+                  this.state.formStatus == MyFormStatus.Failed &&
+                  <MessageBar messageBarType={MessageBarType.error}>{this.state.formStatusMessage}</MessageBar>
+                }
+                {
+                  this.state.formStatus == MyFormStatus.Success &&
+                  <MessageBar messageBarType={MessageBarType.success} isMultiline={true}>
+                    <div><a href={this.state.jobOfferPath} target='_blank'>{this.state.jobOfferTitle}</a> has successfully been created!  Click the link to view Job Offer.</div>
+                    <div><a href="https://claringtonnet.sharepoint.com/sites/HR/JobOffers" target='_blank'>Click here to view all job offers.</a></div>
+                  </MessageBar>
+                }
+                {
+                  this.state.formStatus == MyFormStatus.Loading &&
+                  <ProgressIndicator label={`Creating ${this.state.jobOfferTitle}`} description="Creating document set, applying metadata, copying tempalte documents..." />
+                }
+              </div>
+
               <div className="k-form-buttons" style={{ marginTop: "20px" }}>
                 <Stack horizontal tokens={{ childrenGap: 40 }}>
                   <PrimaryButton text="Submit" type="submit" />
@@ -217,6 +271,13 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                     text="Clear"
                     onClick={e => {
                       e.preventDefault();
+                      this.setState({
+                        formStatus: MyFormStatus.New,
+                        formStatusMessage: null,
+                        jobOfferTitle: null,
+                        jobOfferPath: null,
+                        templateFiles: null
+                      });
                       formRenderProps.onFormReset();
                     }}
                   />

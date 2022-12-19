@@ -77,3 +77,5 @@ export const GetJobTypes = async () => {
     let output = await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).fields.getByInternalNameOrTitle('JobType').select('Choices')();
     return output["Choices"];
 }
+
+export const FormatDocumentSetPath = (jobOfferTitle: string): string => `https://claringtonnet.sharepoint.com/sites/HR/JobOffers/${encodeURIComponent(jobOfferTitle)}`;
