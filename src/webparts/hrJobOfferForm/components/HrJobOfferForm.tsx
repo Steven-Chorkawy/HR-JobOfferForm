@@ -276,7 +276,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                         formStatusMessage: null,
                         jobOfferTitle: null,
                         jobOfferPath: null,
-                        templateFiles: null
+                        templateFiles: []
                       });
                       formRenderProps.onFormReset();
                     }}
