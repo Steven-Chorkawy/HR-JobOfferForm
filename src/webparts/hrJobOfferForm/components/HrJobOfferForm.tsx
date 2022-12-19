@@ -168,7 +168,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
   public render(): React.ReactElement<IHrJobOfferFormProps> {
     return (
-      <div>
+      <div style={{ paddingBottom: '2em', paddingLeft: '2em', paddingRight: '2em' }}>
         <div style={{ fontSize: FontSizes.size32 }}>{this.props.description}</div>
         <hr />
         <Form
