@@ -265,7 +265,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                         this.state.formStatus == MyFormStatus.Success &&
                         <MessageBar messageBarType={MessageBarType.success} isMultiline={true}>
                           <div><a href={this.state.jobOfferPath} target='_blank'>{this.state.jobOfferTitle}</a> has successfully been created!  Click the link to view Job Offer.</div>
-                          <div><a href="https://claringtonnet.sharepoint.com/sites/HR/JobOffers" target='_blank'>Click here to view all job offers.</a></div>
+                          <div style={{ paddingTop: '10px' }}><a href="https://claringtonnet.sharepoint.com/sites/HR/JobOffers" target='_blank'>Click here to view all job offers.</a></div>
                         </MessageBar>
                       }
                       {
