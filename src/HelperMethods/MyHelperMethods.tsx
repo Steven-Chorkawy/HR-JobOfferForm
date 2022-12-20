@@ -12,15 +12,6 @@ import { getSP } from "../webparts/hrJobOfferForm/pnpjsConfig";
 import { INewJobOfferFormSubmit } from "../interfaces/INewJobOfferFormSubmit";
 import { IItems } from "@pnp/sp/items";
 
-
-// Title = JobID-Position-CandidateName
-export const FormatTitle = (JobID: string, Position: string, CandidateName: string): string => {
-    if (JobID === undefined || Position === undefined || CandidateName === undefined)
-        return null;
-
-    return `${JobID} - ${Position} - ${CandidateName}`;
-}
-
 export const GetTemplateDocuments = async (): Promise<IItems[]> => {
     const sp = getSP();
     const templateDocuments = await sp.web.lists.getByTitle(MyLibraries.JobOfferTemplatesLibrary).items.select("Id", "Title", "FileLeafRef", "File/Length").expand("File/Length")();
@@ -46,7 +37,18 @@ export const CreateDocumentSet = async (input: INewJobOfferFormSubmit): Promise<
         JobID: input.JobID,
         CandidateName: input.CandidateName,
         JobType: input.JobType,
-
+        Position: {
+            // '__metadata': { 'type': 'SP.Taxonomy.TaxonomyFieldValue' }, // idk why I can't have this line.  Docs say I need it but it only works if I remove it.
+            'Label': input.Position.name,
+            'TermGuid': input.Position.key, // key prop not the termSet prop.
+            'WssId': -1
+        },
+        Department1: {
+            // '__metadata': { 'type': 'SP.Taxonomy.TaxonomyFieldValue' },
+            'Label': input.Department.name,
+            'TermGuid': input.Department.key, // key prop not the termSet prop.
+            'WssId': -1
+        }
     });
 
     // Copy template files. 
@@ -78,4 +80,15 @@ export const GetJobTypes = async () => {
     return output["Choices"];
 }
 
+
+//#region Formatting Methods
+// Title = JobID-Position-CandidateName
+export const FormatTitle = (JobID: string, Position: string, CandidateName: string): string => {
+    if (JobID === undefined || Position === undefined || CandidateName === undefined)
+        return null;
+
+    return `${JobID} - ${Position} - ${CandidateName}`;
+}
 export const FormatDocumentSetPath = (jobOfferTitle: string): string => `https://claringtonnet.sharepoint.com/sites/HR/JobOffers/${encodeURIComponent(jobOfferTitle)}`;
+//#endregion
+
