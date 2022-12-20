@@ -89,10 +89,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
           label={label}
           buttonLabel={"Select Template File"}
           onSave={(filePickerResult: IFilePickerResult[]) => onSave(filePickerResult)}
-          onChange={(filePickerResult: IFilePickerResult[]) => {
-            console.log('onChange')
-            console.log(filePickerResult);
-          }}
           context={this.props.context}
           defaultFolderAbsolutePath={"https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates"}
           hideRecentTab={true}
@@ -127,9 +123,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
   private _onSubmit = async (e: INewJobOfferFormSubmit): Promise<void> => {
     try {
-      console.log('On Form Submit');
-      console.log(e);
-
       e.Title = FormatTitle(e.JobID, e.Position.name, e.CandidateName);
 
       // Save the title in state to be used in success/failed error messages. 
@@ -141,8 +134,6 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
 
       await CreateDocumentSet(e)
         .then(value => {
-          console.log('Form success!');
-          console.log(value);
           this.setState({
             formStatus: MyFormStatus.Success,
             formStatusMessage: "Job Offer has successfully been created!"
