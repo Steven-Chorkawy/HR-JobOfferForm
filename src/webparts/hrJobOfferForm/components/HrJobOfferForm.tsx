@@ -13,6 +13,7 @@ import { CreateDocumentSet, FormatDocumentSetPath, FormatTitle, GetJobTypes, Get
 import { getSP } from '../pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 import { MyFormStatus } from '../../../enums/MyFormStatus';
+import { Card, CardActions, CardBody, CardTitle } from '@progress/kendo-react-layout';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, IHrJobOfferFormState> {
@@ -244,6 +245,24 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                     formRenderProps.valueGetter('Position') && formRenderProps.valueGetter('Position').name,
                     formRenderProps.valueGetter('CandidateName'))
                 }
+                <Card style={{ width: 200 }}>
+                  <CardBody>
+                    <CardTitle>Card Title</CardTitle>
+                    <CardTitle>Card Subtitle</CardTitle>
+                    <p>
+                      Some quick example text to build on the card title and make up the
+                      bulk of the card content.
+                    </p>
+                  </CardBody>
+                  <CardActions>
+                    <span className="k-button k-button-md k-rounded-md k-button-flat k-button-flat-primary">
+                      Action 1
+                    </span>
+                    <span className="k-button k-button-md k-rounded-md k-button-flat k-button-flat-primary">
+                      Action 2
+                    </span>
+                  </CardActions>
+                </Card>
               </div>
 
               <div>
