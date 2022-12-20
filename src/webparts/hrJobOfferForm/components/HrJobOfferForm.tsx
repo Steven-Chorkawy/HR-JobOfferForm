@@ -13,7 +13,7 @@ import { CreateDocumentSet, FormatDocumentSetPath, FormatTitle, GetJobTypes, Get
 import { getSP } from '../pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 import { MyFormStatus } from '../../../enums/MyFormStatus';
-import { Card, CardActions, CardBody, CardTitle } from '@progress/kendo-react-layout';
+import { Card, CardActions, CardBody, CardSubtitle, CardTitle } from '@progress/kendo-react-layout';
 
 
 export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps, IHrJobOfferFormState> {
@@ -239,49 +239,45 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
               </div>
 
               <div>
-                Test Title: {
-                  FormatTitle(
-                    formRenderProps.valueGetter('JobID'),
-                    formRenderProps.valueGetter('Position') && formRenderProps.valueGetter('Position').name,
-                    formRenderProps.valueGetter('CandidateName'))
-                }
-                <Card style={{ width: 200 }}>
+                <Card>
                   <CardBody>
-                    <CardTitle>Card Title</CardTitle>
-                    <CardTitle>Card Subtitle</CardTitle>
-                    <p>
-                      Some quick example text to build on the card title and make up the
-                      bulk of the card content.
-                    </p>
+                    <CardTitle>
+                      {
+                        FormatTitle(
+                          formRenderProps.valueGetter('JobID'),
+                          formRenderProps.valueGetter('Position') && formRenderProps.valueGetter('Position').name,
+                          formRenderProps.valueGetter('CandidateName'))
+                      }
+                    </CardTitle>
+                    {
+                      (FormatTitle(
+                        formRenderProps.valueGetter('JobID'),
+                        formRenderProps.valueGetter('Position') && formRenderProps.valueGetter('Position').name,
+                        formRenderProps.valueGetter('CandidateName')) === null) &&
+                      <CardSubtitle>Please enter Job ID, Position, and Candidate Name.</CardSubtitle>
+                    }
+                    <div>
+                      {
+                        this.state.formStatus == MyFormStatus.Failed &&
+                        <MessageBar messageBarType={MessageBarType.error}>{this.state.formStatusMessage}</MessageBar>
+                      }
+                      {
+                        this.state.formStatus == MyFormStatus.Success &&
+                        <MessageBar messageBarType={MessageBarType.success} isMultiline={true}>
+                          <div><a href={this.state.jobOfferPath} target='_blank'>{this.state.jobOfferTitle}</a> has successfully been created!  Click the link to view Job Offer.</div>
+                          <div><a href="https://claringtonnet.sharepoint.com/sites/HR/JobOffers" target='_blank'>Click here to view all job offers.</a></div>
+                        </MessageBar>
+                      }
+                      {
+                        this.state.formStatus == MyFormStatus.Loading &&
+                        <ProgressIndicator label={`Creating ${this.state.jobOfferTitle}`} description="Creating document set, applying metadata, copying tempalte documents..." />
+                      }
+                    </div>
                   </CardBody>
-                  <CardActions>
-                    <span className="k-button k-button-md k-rounded-md k-button-flat k-button-flat-primary">
-                      Action 1
-                    </span>
-                    <span className="k-button k-button-md k-rounded-md k-button-flat k-button-flat-primary">
-                      Action 2
-                    </span>
-                  </CardActions>
                 </Card>
               </div>
 
-              <div>
-                {
-                  this.state.formStatus == MyFormStatus.Failed &&
-                  <MessageBar messageBarType={MessageBarType.error}>{this.state.formStatusMessage}</MessageBar>
-                }
-                {
-                  this.state.formStatus == MyFormStatus.Success &&
-                  <MessageBar messageBarType={MessageBarType.success} isMultiline={true}>
-                    <div><a href={this.state.jobOfferPath} target='_blank'>{this.state.jobOfferTitle}</a> has successfully been created!  Click the link to view Job Offer.</div>
-                    <div><a href="https://claringtonnet.sharepoint.com/sites/HR/JobOffers" target='_blank'>Click here to view all job offers.</a></div>
-                  </MessageBar>
-                }
-                {
-                  this.state.formStatus == MyFormStatus.Loading &&
-                  <ProgressIndicator label={`Creating ${this.state.jobOfferTitle}`} description="Creating document set, applying metadata, copying tempalte documents..." />
-                }
-              </div>
+
 
               <div className="k-form-buttons" style={{ marginTop: "20px" }}>
                 <Stack horizontal tokens={{ childrenGap: 40 }}>
