@@ -23,6 +23,7 @@
     "@progress/kendo-react-form": "^5.9.0",
     "@progress/kendo-react-labels": "^5.9.0",
     "@progress/kendo-react-layout": "^5.9.0",
+    "@progress/kendo-theme-bootstrap": "^5.12.0",
     "office-ui-fabric-react": "7.185.7",
     "react": "16.13.1",
     "react-dom": "16.13.1",

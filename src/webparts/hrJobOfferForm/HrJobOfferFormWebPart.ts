@@ -12,6 +12,7 @@ import * as strings from 'HrJobOfferFormWebPartStrings';
 import HrJobOfferForm from './components/HrJobOfferForm';
 import { IHrJobOfferFormProps } from './components/IHrJobOfferFormProps';
 import { getSP } from './pnpjsConfig';
+import '@progress/kendo-theme-bootstrap';
 
 export interface IHrJobOfferFormWebPartProps {
   description: string;
