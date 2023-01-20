@@ -55,7 +55,10 @@ export const CreateDocumentSet = async (input: INewJobOfferFormSubmit): Promise<
     if (input.TemplateFiles) {
         for (let templateFileIndex = 0; templateFileIndex < input.TemplateFiles.length; templateFileIndex++) {
             const templateFile = input.TemplateFiles[templateFileIndex];
-            await CopyTemplateDocument(input.Title, templateFile.fileAbsoluteUrl, templateFile.fileName);
+            // use input.Title instead of templateFile.fileName.  The document should have the same name as the document set.
+            // '- Offer of Employment' is a request from HR.
+            let templateFileName = `${input.Title}${'- Offer of Employment'}${GetFileExtension(templateFile.fileName, templateFile.fileNameWithoutExtension)}`;
+            await CopyTemplateDocument(input.Title, templateFile.fileAbsoluteUrl, templateFileName);
         }
     }
 }
@@ -71,6 +74,11 @@ export const CopyTemplateDocument = async (documentSetTitle: string, templatePat
     await sp.web.getFileByUrl(templatePath).copyTo(destinationUrl, false);
 }
 
+export const GetFileExtension = (fileNameWithExtension: string, fileNameWithoutExtension: string) => {
+    // Produces an array of two elements.  The first should be empty.  The second should include the file extension.
+    return fileNameWithExtension.split(fileNameWithoutExtension)[1];
+}
+
 /**
  * Get a list of Job Type
  */
@@ -79,7 +87,6 @@ export const GetJobTypes = async () => {
     let output = await sp.web.lists.getByTitle(MyLibraries.JobOffersLibrary).fields.getByInternalNameOrTitle('JobType').select('Choices')();
     return output["Choices"];
 }
-
 
 //#region Formatting Methods
 // Title = JobID-Position-CandidateName
