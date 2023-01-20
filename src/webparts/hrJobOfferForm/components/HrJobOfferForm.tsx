@@ -79,7 +79,11 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   }
 
   private TemplateFilePicker = (fieldRenderProps: any) => {
-    const { label, onSave, ...others } = fieldRenderProps;
+    const { label, onSave, jobType, ...others } = fieldRenderProps;
+
+    let folderPath = 'https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates';
+    if (jobType != undefined)
+      folderPath = `${folderPath}/${jobType}`;
 
     return (
       // This FilePicker should only show results from the JobOfferTemplates library.
@@ -90,7 +94,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
           buttonLabel={"Select Template File"}
           onSave={(filePickerResult: IFilePickerResult[]) => onSave(filePickerResult)}
           context={this.props.context}
-          defaultFolderAbsolutePath={"https://claringtonnet.sharepoint.com/sites/HR/JobOfferTemplates"}
+          defaultFolderAbsolutePath={folderPath}
           hideRecentTab={true}
           hideWebSearchTab={true}
           hideStockImages={true}
@@ -213,6 +217,7 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
                 id={"TemplateFiles"}
                 name={"TemplateFiles"}
                 label={"Select Template Files"}
+                jobType={formRenderProps.valueGetter('JobType')}
                 component={this.TemplateFilePicker}
                 onSave={(value: any) => {
                   formRenderProps.onChange('TemplateFiles', { value: value });
