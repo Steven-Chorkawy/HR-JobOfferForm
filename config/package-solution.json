@@ -3,7 +3,7 @@
   "solution": {
     "name": "hr-job-offer-form-client-side-solution",
     "id": "89b933cb-4646-4542-8d01-bb71765cf659",
-    "version": "1.1.0.2",
+    "version": "2.1.0.2",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
