@@ -9,7 +9,7 @@ import { INewJobOfferFormSubmit } from '../../../interfaces/INewJobOfferFormSubm
 import { DefaultButton, Dropdown, DropdownMenuItemType, IDropdownOption, MessageBar, MessageBarType, PrimaryButton, ProgressIndicator, Stack, TextField } from '@fluentui/react';
 import { FilePicker, IFilePickerResult, TaxonomyPicker } from '@pnp/spfx-controls-react';
 import { MyTermSets } from '../../../enums/MyTermSets';
-import { CreateDocumentSet, FormatDocumentSetPath, FormatTitle, GetJobTypes, GetTemplateDocuments } from '../../../HelperMethods/MyHelperMethods';
+import { CreateDocumentSet, FormatDocumentSetPath, FormatTitle, GetJobTypes, GetTemplateDocuments, GET_INVALID_CHARACTERS } from '../../../HelperMethods/MyHelperMethods';
 import { getSP } from '../pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 import { MyFormStatus } from '../../../enums/MyFormStatus';
@@ -115,13 +115,13 @@ export default class HrJobOfferForm extends React.Component<IHrJobOfferFormProps
   private positionValidator = (value: any): string => value ? "" : "Please select a Position."
   private jobIDValidator = (value: any): string => {
     if (!value)
-      return "Please enter a Job ID.  Job IDs cannot contain the following characters.  \" * : < > ? / \\ |";
-    return ['"', '*', ':', '<', '>', '?', '/', '\\', '|'].some(v => { return value.includes(v); }) ? "Job ID cannot contain the following characters.  \" * : < > ? / \\ |" : "";
+      return "Please enter a Job ID.  Job IDs cannot contain the following characters.  \" * : < > ? / \\ | #";
+    return GET_INVALID_CHARACTERS.some(v => { return value.includes(v); }) ? "Job ID cannot contain the following characters.  \" * : < > ? / \\ | #" : "";
   }
   private candidateNameValidator = (value: any): string => {
     if (!value)
-      return "Please enter a Candidate Name.  Candidate Names cannot contain the following characters.  \" * : < > ? / \\ |";
-    return ['"', '*', ':', '<', '>', '?', '/', '\\', '|'].some(v => { return value.includes(v); }) ? "Candidate Name cannot contain the following characters.  \" * : < > ? / \\ |" : "";
+      return "Please enter a Candidate Name.  Candidate Names cannot contain the following characters.  \" * : < > ? / \\ | #";
+    return GET_INVALID_CHARACTERS.some(v => { return value.includes(v); }) ? "Candidate Name cannot contain the following characters.  \" * : < > ? / \\ | #" : "";
   }
   //#endregion
 

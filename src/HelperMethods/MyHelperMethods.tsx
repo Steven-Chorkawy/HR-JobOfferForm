@@ -88,6 +88,14 @@ export const GetJobTypes = async () => {
     return output["Choices"];
 }
 
+/**
+ * Get a list of characters that cannot be in Folder or Document titles.  These characters are determined by SharePoint and Adobe Sign.
+ * '"', '*', ':', '<', '>', '?', '/', '\\', '|' are invalid according to SharePoint. 
+ * '#' is invalid because it causes Adobe Sign to crash.
+ * @returns An array of invalid characters.
+ */
+export const GET_INVALID_CHARACTERS: Array<string> = ['"', '*', ':', '<', '>', '?', '/', '\\', '|', '#'];
+
 //#region Formatting Methods
 // Title = JobID-Position-CandidateName
 export const FormatTitle = (JobID: string, Position: string, CandidateName: string): string => {
@@ -96,6 +104,7 @@ export const FormatTitle = (JobID: string, Position: string, CandidateName: stri
 
     return `${JobID} - ${Position} - ${CandidateName}`;
 }
+
 export const FormatDocumentSetPath = (jobOfferTitle: string): string => `https://claringtonnet.sharepoint.com/sites/HR/JobOffers/${encodeURIComponent(jobOfferTitle)}`;
 //#endregion
 
